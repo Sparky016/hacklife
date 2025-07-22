@@ -57,7 +57,7 @@ export const LanguageSelectScreen: React.FC<LanguageSelectScreenProps> = ({ onSe
           >
             <div className="text-blue-300 font-bold mb-2">WINDOWS</div>
             <div className="text-xs">Command Prompt</div>
-            <div className="text-xs">C:\></div>
+            <div className="text-xs">C:\{'>'}
           </div>
 
           <div 
