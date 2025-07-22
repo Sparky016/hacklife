@@ -1,16 +1,23 @@
 import React from 'react';
 import { useGameLogic } from './hooks/useGameLogic';
 import { StartScreen } from './components/StartScreen';
+import { LanguageSelectScreen } from './components/LanguageSelectScreen';
 import { GameScreen } from './components/GameScreen';
 import { EndScreen } from './components/EndScreen';
 
 function App() {
-  const { gameState, startGame, submitCommand, resetGame, setCurrentInput } = useGameLogic();
+  const { gameState, selectLanguage, startGame, submitCommand, resetGame, setCurrentInput } = useGameLogic();
 
   const renderScreen = () => {
     switch (gameState.gameStatus) {
       case 'start':
-        return <StartScreen onStart={startGame} />;
+        return <StartScreen onStart={() => selectLanguage('windows')} />;
+      
+      case 'language-select':
+        return <LanguageSelectScreen onSelectLanguage={(lang) => {
+          selectLanguage(lang);
+          setTimeout(startGame, 100);
+        }} />;
       
       case 'playing':
         return (
@@ -34,7 +41,7 @@ function App() {
         );
       
       default:
-        return <StartScreen onStart={startGame} />;
+        return <StartScreen onStart={() => selectLanguage('windows')} />;
     }
   };
 

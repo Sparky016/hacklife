@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { GameState, Challenge } from '../types/game';
+import { GameState, Challenge, CommandLanguage } from '../types/game';
 import { challenges } from '../data/challenges';
 import { validateCommand } from '../utils/commandValidator';
 
@@ -11,6 +11,7 @@ const PLAYER_PROGRESS_PER_SUCCESS = 5;
 export const useGameLogic = () => {
   const [gameState, setGameState] = useState<GameState>({
     currentChallenge: null,
+    commandLanguage: 'windows',
     playerProgress: 0,
     rivalProgress: 0,
     timeRemaining: TIMER_DURATION,
@@ -39,6 +40,14 @@ export const useGameLogic = () => {
     return selectedChallenge;
   }, [usedChallenges]);
 
+  const selectLanguage = useCallback((language: CommandLanguage) => {
+    setGameState(prev => ({
+      ...prev,
+      commandLanguage: language,
+      gameStatus: 'language-select'
+    }));
+  }, []);
+
   const addToHistory = useCallback((message: string) => {
     setGameState(prev => ({
       ...prev,
@@ -48,6 +57,9 @@ export const useGameLogic = () => {
 
   const startGame = useCallback(() => {
     const firstChallenge = getRandomChallenge();
+    const promptSymbol = gameState.commandLanguage === 'windows' ? 'C:\\HACKLIFE>' : 'user@hacklife:~$';
+    const systemName = gameState.commandLanguage === 'windows' ? 'WINDOWS' : 'BASH';
+    
     setGameState(prev => ({
       ...prev,
       gameStatus: 'playing',
@@ -56,13 +68,13 @@ export const useGameLogic = () => {
       gameHistory: [
         '> SYSTEM BREACH DETECTED',
         '> RIVAL HACKER "NYX" ATTEMPTING GLOBAL MELTDOWN',
-        '> INITIATING COUNTER-HACK PROTOCOL...',
+        `> INITIATING ${systemName} COUNTER-HACK PROTOCOL...`,
         '> YOU MUST COMPLETE 20 SECURITY CHALLENGES TO STOP NYX',
         '',
         `CHALLENGE 1: ${firstChallenge.description}`
       ]
     }));
-  }, [getRandomChallenge]);
+  }, [getRandomChallenge, gameState.commandLanguage]);
 
   const nextChallenge = useCallback(() => {
     if (gameState.challengesCompleted >= CHALLENGES_TO_WIN) {
@@ -116,7 +128,8 @@ export const useGameLogic = () => {
     }
     
     if (gameState.currentChallenge) {
-      addToHistory(`> Correct command was: ${gameState.currentChallenge.correctCommand}`);
+      const correctCommand = gameState.currentChallenge.correctCommand[gameState.commandLanguage];
+      addToHistory(`> Correct command was: ${correctCommand}`);
       if (gameState.currentChallenge.explanation) {
         addToHistory(`> Info: ${gameState.currentChallenge.explanation}`);
       }
@@ -137,21 +150,23 @@ export const useGameLogic = () => {
     } else {
       setTimeout(nextChallenge, 2000);
     }
-  }, [gameState.rivalProgress, gameState.currentChallenge, addToHistory, nextChallenge]);
+  }, [gameState.rivalProgress, gameState.currentChallenge, gameState.commandLanguage, addToHistory, nextChallenge]);
 
   const submitCommand = useCallback((command: string) => {
     if (!gameState.currentChallenge || gameState.gameStatus !== 'playing') return;
 
-    if (validateCommand(command, gameState.currentChallenge.correctCommand)) {
+    const correctCommand = gameState.currentChallenge.correctCommand[gameState.commandLanguage];
+    if (validateCommand(command, correctCommand)) {
       handleSuccess();
     } else {
       handleFailure('wrong');
     }
-  }, [gameState.currentChallenge, gameState.gameStatus, handleSuccess, handleFailure]);
+  }, [gameState.currentChallenge, gameState.gameStatus, gameState.commandLanguage, handleSuccess, handleFailure]);
 
   const resetGame = useCallback(() => {
     setGameState({
       currentChallenge: null,
+      commandLanguage: 'windows',
       playerProgress: 0,
       rivalProgress: 0,
       timeRemaining: TIMER_DURATION,
@@ -185,6 +200,7 @@ export const useGameLogic = () => {
 
   return {
     gameState,
+    selectLanguage,
     startGame,
     submitCommand,
     resetGame,

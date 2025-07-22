@@ -107,7 +107,9 @@ export const GameScreen: React.FC<GameScreenProps> = ({
           {gameState.gameStatus === 'playing' && (
             <form onSubmit={handleSubmit} className="mb-4">
               <div className="flex items-center">
-                <span className="text-green-300 mr-2">C:\HACKLIFE&gt;</span>
+                <span className="text-green-300 mr-2">
+                  {gameState.commandLanguage === 'windows' ? 'C:\\HACKLIFE>' : 'user@hacklife:~$'}
+                </span>
                 <input
                   ref={inputRef}
                   type="text"

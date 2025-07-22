@@ -49,14 +49,14 @@ export const StartScreen: React.FC<StartScreenProps> = ({ onStart }) => {
         </div>
 
         <div className="text-center">
-          <p className="text-green-300 mb-4 animate-pulse">Press ENTER to begin the counter-hack...</p>
+          <p className="text-green-300 mb-4 animate-pulse">Press ENTER to select command language...</p>
           <div 
             className="inline-block px-6 py-2 border-2 border-green-400 cursor-pointer hover:bg-green-400 hover:text-black transition-all duration-200"
             onClick={onStart}
             onKeyDown={handleKeyPress}
             tabIndex={0}
           >
-            [ START MISSION ]
+            [ SELECT LANGUAGE ]
           </div>
         </div>
 
