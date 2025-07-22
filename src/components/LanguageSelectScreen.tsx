@@ -79,3 +79,4 @@ export const LanguageSelectScreen: React.FC<LanguageSelectScreenProps> = ({ onSe
       </div>
     </div>
   );
+}
